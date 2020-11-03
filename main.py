@@ -228,7 +228,7 @@ def main_worker(gpu, ngpus_per_node, args):
                 'epoch': epoch + 1,
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
-            }, 'pruning_checkpoint.pth.tar')
+            }, str(args.prune_rate) + 'pruning_checkpoint.pth.tar')
 
     print('开始微调，此时最佳精度为', best_acc1)
     # 模型已压缩
@@ -252,7 +252,7 @@ def main_worker(gpu, ngpus_per_node, args):
                 'epoch': epoch + 1,
                 'state_dict': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
-            }, 'finetune_checkpoint.pth.tar')
+            }, str(args.prune_rate) + 'finetune_checkpoint.pth.tar')
     print('任务结束，最佳精度为', best_acc1)
     count_node(model)
 
