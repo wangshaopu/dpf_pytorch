@@ -232,6 +232,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
     print('开始微调，此时最佳精度为', best_acc1)
     # 模型已压缩
+    count_node(model)
 
     for epoch in range(args.epochs, args.epochs + 60):  # 微调60轮
         if args.distributed:
@@ -278,6 +279,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args, scaler):
                                                        and args.rank % torch.cuda.device_count() == 0)
 
     for i, (images, target) in enumerate(train_loader):
+        iterations += 1
+
         if args.gpu is not None:
             images = images.cuda(args.gpu, non_blocking=True)
         if torch.cuda.is_available():
@@ -285,7 +288,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args, scaler):
 
         dense_model = copy.deepcopy(model.state_dict())
 
-        if iterations + 1 % 16 == 0 and (epoch + 1) <= args.milestones[1]:
+        if iterations % 16 == 0 and (epoch + 1) <= args.milestones[1]:
             # 更新mask
             target_sparsity = args.prune_rate - args.prune_rate * \
                 (1 - iterations / (args.milestones[1] * len(train_loader)))**3
@@ -325,8 +328,6 @@ def train(train_loader, model, criterion, optimizer, epoch, args, scaler):
 
         # if is_main and i % args.print_freq == 0:
         #     progress.display(i)
-
-        iterations += 1
 
 
 def train_finetune(train_loader, model, criterion, optimizer, epoch, args, scaler):
