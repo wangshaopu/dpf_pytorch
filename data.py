@@ -31,10 +31,8 @@ def get_CIFAR(args):
     if args.distributed:
         train_sampler = torch.utils.data.distributed.DistributedSampler(
             train_dataset)
-        val_sampler = torch.utils.data.distributed.DistributedSampler(
-            val_dataset)
     else:
-        train_sampler, val_sampler = None, None
+        train_sampler = None
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=args.batch_size, shuffle=(
@@ -43,6 +41,6 @@ def get_CIFAR(args):
 
     val_loader = torch.utils.data.DataLoader(
         val_dataset, batch_size=args.batch_size, shuffle=False,
-        num_workers=args.workers, pin_memory=True, sampler=val_sampler)
+        num_workers=args.workers, pin_memory=True)
 
     return train_loader, val_loader, train_sampler
