@@ -234,6 +234,7 @@ def main_worker(gpu, ngpus_per_node, args):
         print('开始微调，此时最佳精度为', best_acc1.item())
     # 模型已压缩
     count_node(model)
+    best_acc1 = 0
 
     for epoch in range(args.epochs, args.epochs + 60):  # 微调60轮
         if args.distributed:
